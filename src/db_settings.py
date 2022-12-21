@@ -8,10 +8,10 @@ DB_PASS = os.environ.get("DB_PASS", "admin")
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_NAME = os.environ.get("DB_NAME", "labor-exchange")
 
-SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:5433/{DB_NAME}"
 
 engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL
+    SQLALCHEMY_DATABASE_URL, echo=True
 )
 
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession))

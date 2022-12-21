@@ -14,13 +14,15 @@ router = APIRouter(prefix="/users", tags=["users"])
 async def read_users(
     db: AsyncSession = Depends(get_db),
     limit: int = 100,
-    skip: int = 0):
+    skip: int = 0
+):
     return await user_queries.get_all(db=db, limit=limit, skip=skip)
 
 
 @router.post("", response_model=UserSchema)
 async def create_user(user: UserInSchema, db: AsyncSession = Depends(get_db)):
     user = await user_queries.create(db=db, user_schema=user)
+
     return UserSchema.from_orm(user)
 
 
@@ -29,7 +31,8 @@ async def update_user(
     id: int,
     user: UserUpdateSchema,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)):
+    current_user: User = Depends(get_current_user)
+):
 
     old_user = await user_queries.get_by_id(db=db, id=id)
 

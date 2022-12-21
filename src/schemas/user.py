@@ -1,10 +1,11 @@
 import datetime
 from typing import Optional
+
 from pydantic import BaseModel, EmailStr, validator, constr
 
 
 class UserSchema(BaseModel):
-    id: Optional[str] = None
+    id: str = None
     name: str
     email: EmailStr
     hashed_password: str
