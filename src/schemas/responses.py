@@ -21,6 +21,6 @@ class ResponseUpdateSchema(BaseModel):
     is_active: Optional[bool] = None
 
 
-class ResponseSentSchema(BaseModel):
+class ResponseInSchema(BaseModel):
     job_id: int
     message: str

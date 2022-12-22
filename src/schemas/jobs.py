@@ -26,7 +26,7 @@ class JobUpdateSchema(BaseModel):
     is_active: Optional[bool] = None
 
 
-class JobSentSchema(BaseModel):
+class JobInSchema(BaseModel):
     title: str
     description: str
     salary_from: int

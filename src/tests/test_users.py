@@ -1,12 +1,13 @@
 import pytest
-from queries import user as user_query
-from fixtures.users import UserFactory
-from schemas import UserInSchema
 from pydantic import ValidationError
+
+from fixtures.users import UserFactory
+from queries import user as user_query
+from schemas import UserInSchema
 
 
 @pytest.mark.asyncio
-async def test_get_all(sa_session):
+async def test_get_all_users(sa_session):
     user = UserFactory.build()
     sa_session.add(user)
     sa_session.flush()
@@ -18,10 +19,10 @@ async def test_get_all(sa_session):
 
 
 @pytest.mark.asyncio
-async def test_get_by_id(sa_session):
+async def test_get_user_by_id(sa_session):
     user = UserFactory.build()
     sa_session.add(user)
-    sa_session.flush()
+    await sa_session.flush()
 
     current_user = await user_query.get_by_id(sa_session, user.id)
     assert current_user is not None
@@ -29,7 +30,7 @@ async def test_get_by_id(sa_session):
 
 
 @pytest.mark.asyncio
-async def test_get_by_email(sa_session):
+async def test_get_user_by_email(sa_session):
     user = UserFactory.build()
     sa_session.add(user)
     sa_session.flush()
@@ -40,7 +41,7 @@ async def test_get_by_email(sa_session):
 
 
 @pytest.mark.asyncio
-async def test_create(sa_session):
+async def test_create_user(sa_session):
     user = UserInSchema(
         name="Uchpochmak",
         email="bashkort@example.com",
@@ -56,7 +57,7 @@ async def test_create(sa_session):
 
 
 @pytest.mark.asyncio
-async def test_create_password_mismatch(sa_session):
+async def test_create_user_password_mismatch(sa_session):
     with pytest.raises(ValidationError):
         user = UserInSchema(
             name="Uchpochmak",
@@ -69,7 +70,7 @@ async def test_create_password_mismatch(sa_session):
 
 
 @pytest.mark.asyncio
-async def test_update(sa_session):
+async def test_update_user(sa_session):
     user = UserFactory.build()
     sa_session.add(user)
     sa_session.flush()

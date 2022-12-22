@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgres:
-    container_name: postgres-laborexchange
+    container_name: postgres-laborexchange-vladushka
     image: postgres
     environment:
       POSTGRES_DB: "labor-exchange"
@@ -12,6 +12,6 @@ services:
     volumes:
        - postgres:/data/postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
 volumes:
     postgres:

@@ -1,5 +1,5 @@
 from models import User, Response
-from schemas.responses import ResponseSentSchema
+from schemas.responses import ResponseInSchema
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -8,7 +8,7 @@ from fastapi import HTTPException, status
 from dependencies.job import get_current_job
 
 
-async def create_response(db: AsyncSession, response_schema: ResponseSentSchema, current_user: User) -> Response:
+async def create_response(db: AsyncSession, response_schema: ResponseInSchema, current_user: User) -> Response:
     if not current_user.is_company:
         user_id: int = current_user.id
         response = Response(

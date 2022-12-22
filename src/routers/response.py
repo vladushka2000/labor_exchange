@@ -1,6 +1,6 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.responses import ResponseSchema, ResponseSentSchema
+from schemas.responses import ResponseSchema, ResponseInSchema
 from dependencies import get_db, get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from queries import response as response_queries
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/responses", tags=["responses"])
 
 @router.post("", response_model=ResponseSchema)
 async def create_response(
-        response: ResponseSentSchema,
+        response: ResponseInSchema,
         db: AsyncSession = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
