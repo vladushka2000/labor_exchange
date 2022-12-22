@@ -1,9 +1,11 @@
+from typing import List, Optional
+
+from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from models import Job, User
 from schemas.jobs import JobInSchema, JobUpdateSchema
-from typing import List, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from fastapi import HTTPException, status
 
 
 async def create_job(db: AsyncSession, job_schema: JobInSchema, current_user: User) -> Job:

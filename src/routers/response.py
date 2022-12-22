@@ -1,10 +1,12 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.responses import ResponseSchema, ResponseInSchema
-from dependencies import get_db, get_current_user
+
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from queries import response as response_queries
+
+from dependencies import get_db, get_current_user
 from models import User
+from queries import response as response_queries
+from schemas.responses import ResponseSchema, ResponseInSchema
 
 router = APIRouter(prefix="/responses", tags=["responses"])
 

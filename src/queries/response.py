@@ -1,11 +1,12 @@
-from models import User, Response
-from schemas.responses import ResponseInSchema
 from typing import List, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+
 from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies.job import get_current_job
+from models import User, Response
+from schemas.responses import ResponseInSchema
 
 
 async def create_response(db: AsyncSession, response_schema: ResponseInSchema, current_user: User) -> Response:

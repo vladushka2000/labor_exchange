@@ -1,11 +1,12 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.jobs import JobSchema, JobInSchema, JobUpdateSchema
-from dependencies import get_db, get_current_user
-from sqlalchemy.ext.asyncio import AsyncSession
-from queries import job as job_queries
-from models import User
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from dependencies import get_db, get_current_user
+from models import User
+from queries import job as job_queries
+from schemas.jobs import JobSchema, JobInSchema, JobUpdateSchema
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
