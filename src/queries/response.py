@@ -4,28 +4,41 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies.job import get_current_job
+from queries.job import get_job_by_id
 from models import User, Response
 from schemas.responses import ResponseInSchema
 
 
-async def create_response(db: AsyncSession, response_schema: ResponseInSchema, current_user: User) -> Response:
-    if not current_user.is_company:
-        user_id: int = current_user.id
-        response = Response(
-            user_id=user_id,
-            job_id=response_schema.job_id,
-            message=response_schema.message
-        )
+async def create_response(db: AsyncSession,
+                          response_schema: ResponseInSchema,
+                          current_user: User) -> Response | HTTPException:
+    try:
+        current_job = await get_job_by_id(db=db, id=response_schema.job_id)
+    except HTTPException:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                             detail="Вакансия не найдена")
+    else:
+        if not current_job.is_active:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Вакансия не активна")
 
-        if get_current_job(response.job_id):
-            db.add(response)
-            await db.commit()
-            await db.refresh(response)
+    if current_user.is_company:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Компания не может делать отклики на вакансии")
 
-            return response
+    user_id: int = current_user.id
+    response = Response(
+        user_id=user_id,
+        job_id=response_schema.job_id,
+        message=response_schema.message
+    )
 
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Компания не может делать отклики на вакансии")
+    db.add(response)
+    await db.commit()
+    await db.refresh(response)
+
+    return response
+
 
 
 async def get_my_responses(db: AsyncSession, current_user: User) -> Optional[List[Response]]:
