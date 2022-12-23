@@ -111,6 +111,32 @@ async def test_create_response_by_user(sa_session):
 
 
 @pytest.mark.asyncio
+async def test_create_response_by_user_for_inactive_job(sa_session):
+    user = UserFactory.build(is_company=False)
+    sa_session.add(user)
+    await sa_session.flush()
+
+    job = JobFactory.build()
+    job.user_id = user.id
+    job.is_active = False
+    sa_session.add(job)
+    await sa_session.flush()
+
+    fake_data = Faker()
+
+    response = ResponseInSchema(
+        job_id=job.id,
+        message=fake_data.pystr(min_chars=100, max_chars=200)
+    )
+
+    with pytest.raises(HTTPException) as http_exception:
+        await response_query.create_response(sa_session, response_schema=response, current_user=user)
+
+    assert http_exception.value.status_code == 403
+    assert http_exception.value.detail == "Вакансия не активна"
+
+
+@pytest.mark.asyncio
 async def test_create_response_by_company(sa_session):
     user = UserFactory.build(is_company=True)
     sa_session.add(user)
