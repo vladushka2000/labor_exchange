@@ -1,7 +1,8 @@
 import pytest
-from fastapi import HTTPException
-
 from faker import Faker
+from fastapi import HTTPException
+from pydantic import ValidationError
+
 from fixtures.jobs import JobFactory
 from fixtures.users import UserFactory
 from queries import job as job_query
@@ -82,6 +83,45 @@ async def test_create_job_by_company(sa_session):
     assert new_job.salary_from == job.salary_from
     assert new_job.salary_to == job.salary_to
     assert new_job.is_active
+
+
+@pytest.mark.asyncio
+async def test_create_job_with_invalid_data(sa_session):
+    user = UserFactory.build(is_company=True)
+    sa_session.add(user)
+    await sa_session.flush()
+
+    fake_data = Faker()
+
+    with pytest.raises(ValidationError):
+        JobInSchema(
+            title="a",
+            description=fake_data.pystr(min_chars=100, max_chars=200),
+            salary_from=fake_data.pyint(min_value=16242, max_value=20000),
+            salary_to=fake_data.pyint(min_value=20000, max_value=200000),
+            is_active=True
+        )
+        JobInSchema(
+            title=fake_data.pystr(min_chars=100, max_chars=200),
+            description="a",
+            salary_from=fake_data.pyint(min_value=16242, max_value=20000),
+            salary_to=fake_data.pyint(min_value=20000, max_value=200000),
+            is_active=True
+        )
+        JobInSchema(
+            title=fake_data.pystr(min_chars=100, max_chars=200),
+            description=fake_data.pystr(min_chars=100, max_chars=200),
+            salary_from=0,
+            salary_to=fake_data.pyint(min_value=20000, max_value=200000),
+            is_active=True
+        )
+        JobInSchema(
+            title=fake_data.pystr(min_chars=100, max_chars=200),
+            description=fake_data.pystr(min_chars=100, max_chars=200),
+            salary_from=fake_data.pyint(min_value=16242, max_value=20000),
+            salary_to=0,
+            is_active=True
+        )
 
 
 @pytest.mark.asyncio
