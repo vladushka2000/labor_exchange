@@ -6,6 +6,7 @@ from fixtures.responses import ResponseFactory
 from fixtures.users import UserFactory
 from queries import response as response_query
 from schemas.responses import ResponseInSchema
+from faker import Faker
 
 
 @pytest.mark.asyncio
@@ -95,9 +96,11 @@ async def test_create_response_by_user(sa_session):
     sa_session.add(job)
     await sa_session.flush()
 
+    fake_data = Faker()
+
     response = ResponseInSchema(
         job_id=job.id,
-        message="берите меня"
+        message=fake_data.pystr(min_chars=100, max_chars=200)
     )
 
     new_response = await response_query.create_response(sa_session, response_schema=response, current_user=user)
@@ -118,9 +121,11 @@ async def test_create_response_by_company(sa_session):
     sa_session.add(job)
     await sa_session.flush()
 
+    fake_data = Faker()
+
     response = ResponseInSchema(
         job_id=job.id,
-        message="берите меня"
+        message=fake_data.pystr(min_chars=100, max_chars=200)
     )
 
     with pytest.raises(HTTPException) as http_exception:

@@ -1,6 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
+from faker import Faker
 from fixtures.users import UserFactory
 from queries import user as user_query
 from schemas import UserInSchema
@@ -42,9 +43,11 @@ async def test_get_user_by_email(sa_session):
 
 @pytest.mark.asyncio
 async def test_create_user(sa_session):
+    fake_data = Faker()
+
     user = UserInSchema(
-        name="Uchpochmak",
-        email="bashkort@example.com",
+        name=fake_data.pystr(min_chars=100, max_chars=200),
+        email=fake_data.ascii_safe_email(),
         password="eshkere!",
         password2="eshkere!",
         is_company=False
@@ -52,16 +55,18 @@ async def test_create_user(sa_session):
 
     new_user = await user_query.create(sa_session, user_schema=user)
     assert new_user is not None
-    assert new_user.name == "Uchpochmak"
-    assert new_user.hashed_password != "eshkere!"
+    assert new_user.name == user.name
+    assert new_user.hashed_password != user.password
 
 
 @pytest.mark.asyncio
 async def test_create_user_password_mismatch(sa_session):
+    fake_data = Faker()
+
     with pytest.raises(ValidationError):
         user = UserInSchema(
-            name="Uchpochmak",
-            email="bashkort@example.com",
+            name=fake_data.pystr(min_chars=100, max_chars=200),
+            email=fake_data.ascii_safe_email(),
             password="eshkere!",
             password2="eshkero!",
             is_company=False

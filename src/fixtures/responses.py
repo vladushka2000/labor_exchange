@@ -1,6 +1,5 @@
 import factory
 from factory_boy_extra.async_sqlalchemy_factory import AsyncSQLAlchemyModelFactory
-
 from models import Response
 
 
@@ -11,4 +10,4 @@ class ResponseFactory(AsyncSQLAlchemyModelFactory):
     id = factory.Sequence(lambda n: n)
     user_id = 0
     job_id = 0
-    message = factory.Faker("pystr")
+    message = factory.Faker("pystr", min_chars=100, max_chars=200)

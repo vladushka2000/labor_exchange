@@ -8,7 +8,7 @@ class JobSchema(BaseModel):
     id: int = None
     user_id: int
     title: constr(min_length=10)
-    description: constr(min_length=10)
+    description: constr(min_length=100)
     salary_from: conint(ge=16242)
     salary_to: conint(ge=16242)
     is_active: bool
@@ -20,7 +20,7 @@ class JobSchema(BaseModel):
 
 class JobUpdateSchema(BaseModel):
     title: Optional[constr(min_length=10)] = None
-    description: Optional[constr(min_length=10)] = None
+    description: Optional[constr(min_length=100)] = None
     salary_from: Optional[conint(ge=16242)] = None
     salary_to: Optional[conint(ge=16242)] = None
     is_active: Optional[bool] = True
@@ -45,7 +45,7 @@ class JobUpdateSchema(BaseModel):
 
 class JobInSchema(BaseModel):
     title: constr(min_length=10)
-    description: constr(min_length=10)
+    description: constr(min_length=100)
     salary_from: conint(ge=16242)
     salary_to: conint(ge=16242)
     is_active: bool = True

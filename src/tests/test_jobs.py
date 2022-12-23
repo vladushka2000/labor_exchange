@@ -1,6 +1,7 @@
 import pytest
 from fastapi import HTTPException
 
+from faker import Faker
 from fixtures.jobs import JobFactory
 from fixtures.users import UserFactory
 from queries import job as job_query
@@ -8,7 +9,7 @@ from schemas.jobs import JobInSchema, JobUpdateSchema
 
 
 @pytest.mark.asyncio
-async def test_get_all_jobs(sa_session):
+async def test_get_all_active_jobs(sa_session):
     user = UserFactory.build()
     sa_session.add(user)
     await sa_session.flush()
@@ -46,11 +47,13 @@ async def test_create_job_by_company(sa_session):
     sa_session.add(user)
     await sa_session.flush()
 
+    fake_data = Faker()
+
     job = JobInSchema(
-        title="Kassir",
-        description="Na kasse",
-        salary_from=0,
-        salary_to=123,
+        title=fake_data.pystr(min_chars=100, max_chars=200),
+        description=fake_data.pystr(min_chars=100, max_chars=200),
+        salary_from=fake_data.pyint(min_value=16242, max_value=20000),
+        salary_to=fake_data.pyint(min_value=20000, max_value=200000),
         is_active=True
     )
 
@@ -70,11 +73,13 @@ async def test_create_job_by_non_company(sa_session):
     sa_session.add(user)
     await sa_session.flush()
 
+    fake_data = Faker()
+
     job = JobInSchema(
-        title="Kassir",
-        description="Na kasse",
-        salary_from=0,
-        salary_to=123,
+        title=fake_data.pystr(min_chars=100, max_chars=200),
+        description=fake_data.pystr(min_chars=100, max_chars=200),
+        salary_from=fake_data.pyint(min_value=16242, max_value=20000),
+        salary_to=fake_data.pyint(min_value=20000, max_value=200000),
         is_active=True
     )
 
@@ -91,16 +96,18 @@ async def test_update_job_by_related_user(sa_session):
     sa_session.add(user)
     await sa_session.flush()
 
-    job = JobFactory.build()
+    job = JobFactory.build(salary_from=16242, salary_to=16243)
     job.user_id = user.id
     sa_session.add(job)
     await sa_session.flush()
 
+    fake_data = Faker()
+
     updated_job = JobUpdateSchema(
-        title="updated_kassir",
-        description="updated_rabota_na_kasse",
-        salary_from=123,
-        salary_to=246,
+        title=fake_data.pystr(min_chars=100, max_chars=200),
+        description=fake_data.pystr(min_chars=100, max_chars=200),
+        salary_from=20000,
+        salary_to=20001,
         is_active=False
     )
 
@@ -124,16 +131,18 @@ async def test_update_job_by_unrelated_user(sa_session):
     sa_session.add(user_unrelated)
     await sa_session.flush()
 
-    job = JobFactory.build()
+    job = JobFactory.build(salary_from=16242, salary_to=16243)
     job.user_id = user_related.id
     sa_session.add(job)
     await sa_session.flush()
 
+    fake_data = Faker()
+
     updated_job = JobUpdateSchema(
-        title="updated_kassir",
-        description="updated_rabota_na_kasse",
-        salary_from=123,
-        salary_to=246,
+        title=fake_data.pystr(min_chars=100, max_chars=200),
+        description=fake_data.pystr(min_chars=100, max_chars=200),
+        salary_from=20000,
+        salary_to=20001,
         is_active=False
     )
 
