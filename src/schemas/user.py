@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr, validator, constr
 
 class UserSchema(BaseModel):
     id: str = None
-    name: str
+    name: constr(min_length=10)
     email: EmailStr
     hashed_password: str
     is_company: bool
@@ -17,13 +17,13 @@ class UserSchema(BaseModel):
 
 
 class UserUpdateSchema(BaseModel):
-    name: Optional[str] = None
+    name: Optional[constr(min_length=10)] = None
     email: Optional[EmailStr] = None
-    is_company: Optional[bool] = None
+    is_company: Optional[bool] = False
 
 
 class UserInSchema(BaseModel):
-    name: str
+    name: constr(min_length=5)
     email: EmailStr
     password: constr(min_length=8)
     password2: str
@@ -33,4 +33,6 @@ class UserInSchema(BaseModel):
     def password_match(cls, v, values, **kwargs):
         if 'password' in values and v != values["password"]:
             raise ValueError("Пароли не совпадают!")
+
         return True
+

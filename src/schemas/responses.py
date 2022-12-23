@@ -1,26 +1,18 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 class ResponseSchema(BaseModel):
     id: int = None
     user_id: int
     job_id: int
-    message: str
+    message: constr(min_length=10)
 
     class Config:
         orm_mode = True
 
 
-class ResponseUpdateSchema(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    salary_from: Optional[int] = None
-    salary_to: Optional[int] = None
-    is_active: Optional[bool] = None
-
-
 class ResponseInSchema(BaseModel):
     job_id: int
-    message: str
+    message: constr(min_length=10)
