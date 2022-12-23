@@ -26,6 +26,23 @@ async def test_get_all_active_jobs(sa_session):
 
 
 @pytest.mark.asyncio
+async def test_get_all_inactive_jobs(sa_session):
+    user = UserFactory.build()
+    sa_session.add(user)
+    await sa_session.flush()
+
+    job = JobFactory.build()
+    job.user_id = user.id
+    job.is_active = False
+    sa_session.add(job)
+    await sa_session.flush()
+
+    all_jobs = await job_query.get_all_jobs(sa_session)
+    assert not all_jobs
+    assert len(all_jobs) == 0
+
+
+@pytest.mark.asyncio
 async def test_get_job(sa_session):
     user = UserFactory.build()
     sa_session.add(user)

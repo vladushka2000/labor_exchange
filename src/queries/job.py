@@ -29,7 +29,7 @@ async def create_job(db: AsyncSession, job_schema: JobInSchema, current_user: Us
 
 
 async def get_all_jobs(db: AsyncSession, limit: int = 100, skip: int = 0) -> Optional[List[Job]]:
-    query = select(Job).limit(limit).offset(skip)
+    query = select(Job).where(Job.is_active).limit(limit).offset(skip)
     res = await db.execute(query)
 
     return res.scalars().all()
