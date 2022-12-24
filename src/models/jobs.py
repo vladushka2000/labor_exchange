@@ -1,6 +1,7 @@
 import datetime
 
 import sqlalchemy as sa
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
 from db_settings import Base
@@ -17,5 +18,5 @@ class Job(Base):
     salary_to = sa.Column(sa.Integer, comment="Зарплата до")
     is_active = sa.Column(sa.Boolean, comment="Активна ли вакансия")
     created_at = sa.Column(sa.DateTime, comment="Дата создания записи", default=datetime.datetime.utcnow)
-    user = relationship("User", back_populates="jobs")
     responses = relationship("Response", back_populates="job")
+    jobs = association_proxy("responses", "user")
