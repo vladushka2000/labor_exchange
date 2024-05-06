@@ -1,12 +1,12 @@
 import datetime
 from typing import Optional
 
-from pydantic import BaseModel, validator, conint, constr
+from pydantic import BaseModel, conint, constr, field_validator, ValidationInfo
 
 
 class JobSchema(BaseModel):
-    id: int = None
-    user_id: int
+    id: str = None
+    user_id: str
     title: constr(min_length=10)
     description: constr(min_length=100)
     salary_from: conint(ge=16242)
@@ -23,9 +23,10 @@ class JobUpdateSchema(BaseModel):
     description: Optional[constr(min_length=100)] = None
     salary_from: Optional[conint(ge=16242)] = None
     salary_to: Optional[conint(ge=16242)] = None
-    is_active: Optional[bool] = True
+    is_active: Optional[bool] = None
 
-    @validator("salary_from")
+    @field_validator("salary_from")
+    @classmethod
     def salary_from_16242(cls, v, values, **kwargs):
         if v < 16242:
             raise ValueError(
@@ -35,9 +36,10 @@ class JobUpdateSchema(BaseModel):
 
         return v
 
-    @validator("salary_to")
-    def salary_to_greater_or_equals_salary_from(cls, v, values, **kwargs):
-        if "salary_from" in values and v < values["salary_from"]:
+    @field_validator("salary_to")
+    @classmethod
+    def salary_to_greater_or_equals_salary_from(cls, v, info: ValidationInfo, **kwargs):
+        if "salary_from" in info.data and v < info.data["salary_from"]:
             raise ValueError("Максимальная зарплата должна быть больше или равна минимальной")
 
         return v
@@ -48,9 +50,10 @@ class JobInSchema(BaseModel):
     description: constr(min_length=100)
     salary_from: conint(ge=16242)
     salary_to: conint(ge=16242)
-    is_active: bool = True
+    is_active: Optional[bool] = True
 
-    @validator("salary_from")
+    @field_validator("salary_from")
+    @classmethod
     def salary_from_16242(cls, v, values, **kwargs):
         if v < 16242:
             raise ValueError(
@@ -60,9 +63,10 @@ class JobInSchema(BaseModel):
 
         return v
 
-    @validator("salary_to")
-    def salary_to_greater_or_equals_salary_from(cls, v, values, **kwargs):
-        if "salary_from" in values and v < values["salary_from"]:
+    @field_validator("salary_to")
+    @classmethod
+    def salary_to_greater_or_equals_salary_from(cls, v, info: ValidationInfo, **kwargs):
+        if "salary_from" in info.data and v < info.data["salary_from"]:
             raise ValueError("Максимальная зарплата должна быть больше или равна минимальной")
 
         return v

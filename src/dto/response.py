@@ -2,9 +2,9 @@ from pydantic import BaseModel, constr
 
 
 class ResponseSchema(BaseModel):
-    id: int = None
-    user_id: int
-    job_id: int
+    id: str = None
+    user_id: str
+    job_id: str
     message: constr(min_length=100)
 
     class Config:
@@ -12,5 +12,5 @@ class ResponseSchema(BaseModel):
 
 
 class ResponseInSchema(BaseModel):
-    job_id: int
+    job_id: str
     message: constr(min_length=100)
