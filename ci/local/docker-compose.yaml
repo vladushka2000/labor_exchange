@@ -1,0 +1,85 @@
+name: labor-exchange
+
+services:
+  db:
+    image: postgres:16.0
+    hostname: db
+    container_name: db
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./.env
+
+  db-keycloak:
+    image: postgres:16.0
+    hostname: db-keycloak
+    container_name: db-keycloak
+    environment:
+      POSTGRES_DB: ${POSTGRES_KEYCLOAK_DB}
+      POSTGRES_USER: ${POSTGRES_KEYCLOAK_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_KEYCLOAK_HOST}
+    ports:
+      - ${POSTGRES_KEYCLOAK_PORT}:5432
+    volumes:
+      - db-keycloak:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_KEYCLOAK_USER} -d ${POSTGRES_KEYCLOAK_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./.env
+
+  keycloak:
+    build:
+      context: keycloak
+      dockerfile: keycloak.Dockerfile
+    hostname: keycloak
+    container_name: keycloak
+    command: [ "start", "--import-realm" ]
+    healthcheck:
+      test: [
+        "CMD", "curl", "-f", "http://localhost:${KC_PORT}/health/ready",
+        "||", "exit", "1"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    ports:
+      - ${KC_PORT}:8080
+    volumes:
+      - keycloak:/opt/keycloak/data
+    depends_on:
+      db-keycloak:
+        condition: service_healthy
+    environment:
+      - KC_CLIENT_ID=${KC_CLIENT_ID}
+      - KC_CLIENT_SECRET=${KC_CLIENT_SECRET}
+      - KC_REALM_NAME=${KC_REALM_NAME}
+      - APP_URL=${APP_URL}
+    env_file:
+      - ./.env
+
+  backend:
+    build:
+      context: ../../src/
+      dockerfile: ./Dockerfile
+    ports:
+      - ${APP_PORT}:7777
+    depends_on:
+      - keycloak
+      - db
+
+volumes:
+    db:
+    db-keycloak:
+    keycloak:

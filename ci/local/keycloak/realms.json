@@ -1,0 +1,255 @@
+{
+  "realm": "${KC_REALM_NAME}",
+  "enabled": true,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "ru"
+  ],
+  "defaultLocale": "ru",
+  "registrationAllowed": true,
+  "defaultSignatureAlgorithm": "HS256",
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      {
+        "name": "applicant",
+        "description": "Роль для соискателей"
+      },
+      {
+        "name": "company",
+        "description": "Роль для компаний"
+      }
+    ]
+  },
+  "defaultGroups": [
+    "/applicant",
+    "/management-users-group"
+  ],
+  "groups": [
+    {
+      "id": "0d1846ae-5da5-4814-a76e-813f3a09d978",
+      "name": "applicant",
+      "realmRoles": [
+        "applicant"
+      ]
+    },
+    {
+      "id": "da269c83-9689-4959-94eb-56cf6b48c681",
+      "name": "company",
+      "realmRoles": [
+        "company"
+      ]
+    },
+    {
+      "id": "b2fb6a73-8898-48c9-af3b-6b7ce17dcec2",
+      "name": "management-users-group",
+      "clientRoles": {
+        "realm-management": [
+          "view-users"
+        ]
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "firstName": "admin",
+      "lastName": "admin",
+      "email": "admin@example.com",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "realm-admin",
+          "view-realm",
+          "view-users",
+          "view-clients",
+          "view-events",
+          "manage-users",
+          "manage-clients",
+          "manage-events",
+          "manage-realm"
+        ]
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "${KC_CLIENT_ID}",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "authorizationServicesEnabled": true,
+      "secret": "${KC_CLIENT_SECRET}",
+      "protocol": "openid-connect",
+      "directAccessGrantsEnabled": true,
+      "publicClient": false,
+      "rootUrl": "${APP_URL}",
+      "baseUrl": "${APP_URL}/api/v1",
+      "redirectUris": [
+        "${APP_URL}/api/v1/auth/tokens"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "attributes": {
+        "token.response.signature.alg": "HS256",
+        "access.token.signed.response.alg": "HS256",
+        "id.token.signed.response.alg": "HS256",
+        "user.info.response.signature.alg": "HS256",
+        "request.object.signature.alg": "HS256",
+        "authorization.signed.response.alg": "HS256",
+        "post.logout.redirect.uris": "${APP_URL}/api/v1",
+        "login_theme": "keycloak.v2"
+      }
+    },
+    {
+      "clientId": "admin-cli",
+      "name": "${client_admin-cli}",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "client.use.lightweight.access.token.enabled": "true"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": 0,
+      "defaultClientScopes": [
+        "custom_token_claims"
+      ],
+      "optionalClientScopes": [],
+      "access": {
+        "view": true,
+        "configure": true,
+        "manage": true
+      }
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "custom_token_claims",
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "user creation date",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "createdTimestamp",
+            "claim.name": "created_timestamp",
+            "jsonType.label": "long",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "family name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "lastName",
+            "claim.name": "family_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "given name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "firstName",
+            "claim.name": "given_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "email",
+            "claim.name": "email",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "username",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "claim.name": "realm_roles",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "user_id_mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "id",
+            "claim.name": "user_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "defaultDefaultClientScopes": [
+    "custom_token_claims"
+  ]
+}
